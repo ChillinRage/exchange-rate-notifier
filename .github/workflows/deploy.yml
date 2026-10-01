@@ -16,10 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug OIDC Claims
-        uses: github/actions-oidc-debugger@main
-        with:
-          audience: sts.amazonaws.com
+      - name: Get GitHub account and repository IDs
+        run: |
+          echo "Account ID:"
+          gh api /users/${{ github.repository_owner }} --jq .id
+
+          echo "Repository ID:"
+          gh api /repos/${{ github.repository }} --jq .id
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
