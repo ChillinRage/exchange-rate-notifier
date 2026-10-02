@@ -32,8 +32,8 @@ jobs:
           cd dist
           zip -r ../lambda.zip .
 
-      - name: Deploy Lambda Function
-        uses: aws-actions/aws-lambda-deploy@v1
-        with:
-          function-name: jpy-exchange-rate
-          code-artifacts-dir: ./dist
+      - name: Deploy Lambda code
+        run: |
+          aws lambda update-function-code \
+            --function-name jpy-exchange-rate \
+            --zip-file fileb://lambda.zip
