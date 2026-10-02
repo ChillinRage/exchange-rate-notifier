@@ -27,6 +27,11 @@ jobs:
           mkdir -p dist
           cp main.py dist/
 
+      - name: Package Lambda
+        run: |
+          cd dist
+          zip -r ../lambda.zip .
+
       - name: Deploy Lambda Function
         uses: aws-actions/aws-lambda-deploy@v1
         with:
