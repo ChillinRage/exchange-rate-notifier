@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 EXCHANGE_RATE_THRESHOLD = 125.00
 BASE_CURRENCY = "SGD"
+TO_CURRENCY = "JPY"
 EXCHANGE_API_URL = f"https://api.exchangerate.fun/latest?base={BASE_CURRENCY}"
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{os.environ['TELEGRAM_TOKEN']}/sendMessage"
 
@@ -28,19 +29,19 @@ def lambda_handler(event, context):
 
     with urllib.request.urlopen(rate_req) as response:
         data = json.loads(response.read().decode('utf-8'))
-        rate = float(data['rates']['JPY'])
+        rate = float(data['rates'][TO_CURRENCY])
         timestamp = datetime.fromtimestamp(
             int(data['timestamp']),
             tz=ZoneInfo("Asia/Singapore")
         ).strftime("%d %b, %I %p")
 
-    logger.info("Current rate (per %s): %f JPY", BASE_CURRENCY, rate)
+    logger.info("Current rate (per %s): %f %s", BASE_CURRENCY, rate, TO_CURRENCY)
 
     # send message only if exceed threshold
     if rate >= EXCHANGE_RATE_THRESHOLD:
         payload = {
             "chat_id": os.environ['TELEGRAM_CHAT_ID'],
-            "text": f"[{timestamp}] 1 {BASE_CURRENCY} is <b>{rate:.2f}</b> JPY!",
+            "text": f"[{timestamp}] 1 {BASE_CURRENCY} is <b>{rate:.2f}</b> {TO_CURRENCY}!",
             "parse_mode": "HTML"
         }
 
